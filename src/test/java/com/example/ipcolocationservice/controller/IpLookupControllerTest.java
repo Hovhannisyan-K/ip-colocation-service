@@ -38,9 +38,9 @@ class IpLookupControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.ipAddress").value("136.159.0.0"))
                 .andExpect(jsonPath("$.continent").value("Americas"))
-                .andExpect(jsonPath("$.country").value("Canada"))
-                .andExpect(jsonPath("$.region").value("Alberta"))
-                .andExpect(jsonPath("$.city").value("Calgary"))
+                .andExpect(jsonPath("$.countryName").value("Canada"))
+                .andExpect(jsonPath("$.regionName").value("Alberta"))
+                .andExpect(jsonPath("$.cityName").value("Calgary"))
                 .andExpect(jsonPath("$.latitude").value(51.075153))
                 .andExpect(jsonPath("$.longitude").value(-114.12841));
 
