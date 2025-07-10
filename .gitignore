@@ -1,0 +1,55 @@
+# Maven build output
+/target/
+/pom.xml.tag
+/pom.xml.releaseBackup
+/pom.xml.versionsBackup
+/logs/
+/dependency-reduced-pom.xml
+/buildNumber.properties
+
+# IntelliJ IDEA
+/.idea/
+/*.iml
+/*.iws
+/*.iml
+/out/
+
+# Eclipse / STS
+.classpath
+.project
+.settings/
+/.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+
+# VS Code
+.vscode/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Wrapper scripts
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Logs
+*.log
+
+# Optional: environment files
+.env
+
+# Keep these folders if they contain source
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
