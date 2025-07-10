@@ -1,7 +1,7 @@
 package com.example.ipcolocationservice.controller;
 
 import com.example.ipcolocationservice.dto.IpInfoResponse;
-import com.example.ipcolocationservice.exceptions.ExternalApiException;
+import com.example.ipcolocationservice.exception.ExternalApiException;
 import com.example.ipcolocationservice.service.IpLookupService;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.example.ipcolocationservice.exceptions;
+package com.example.ipcolocationservice.exception;
 
 public class ExternalApiException extends RuntimeException {
     public ExternalApiException(String message) {

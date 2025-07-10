@@ -1,38 +1,29 @@
-package com.example.ipcolocationservice.service;
+package com.example.ipcolocationservice.service.provider;
 
 import com.example.ipcolocationservice.dto.IpInfoResponse;
 import com.example.ipcolocationservice.exception.ExternalApiException;
+import com.example.ipcolocationservice.service.IpGeolocationProvider;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
-@Service
-public class IpLookupService {
+@Component
+public class FreeIpApiProvider implements IpGeolocationProvider {
 
-    private static final Duration CACHE_TTL = Duration.ofDays(30);
     private static final Duration API_TIMEOUT = Duration.ofSeconds(5);
-
     private final WebClient webClient;
-    private final Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
-    public IpLookupService(WebClient freeIpApiWebClient) {
+    public FreeIpApiProvider(WebClient freeIpApiWebClient) {
         this.webClient = freeIpApiWebClient;
     }
 
-    public IpInfoResponse lookup(String ip) {
-        CacheEntry entry = cache.get(ip);
-        if (entry != null && Instant.now().minus(CACHE_TTL).isBefore(entry.timestamp)) {
-            return entry.info;
-        }
-
+    @Override
+    public IpInfoResponse getIpInfo(String ip) {
         IpInfoResponse info;
         try {
             info = webClient.get()
@@ -58,10 +49,11 @@ public class IpLookupService {
             throw new ExternalApiException("Empty response from FreeIPAPI for IP: " + ip);
         }
 
-        cache.put(ip, new CacheEntry(info, Instant.now()));
         return info;
     }
 
-    private record CacheEntry(IpInfoResponse info, Instant timestamp) {
+    @Override
+    public String getProviderName() {
+        return "FreeIPAPI";
     }
 }
