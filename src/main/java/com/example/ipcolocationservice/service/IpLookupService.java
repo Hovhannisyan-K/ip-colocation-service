@@ -46,7 +46,7 @@ public class IpLookupService {
                     .timeout(API_TIMEOUT)
                     .block();
         } catch (WebClientResponseException e) {
-            throw new ExternalApiException("FreeIPAPI returned error: " + e.getRawStatusCode(), e);
+            throw new ExternalApiException("FreeIPAPI returned error: " + e.getStatusCode(), e);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof TimeoutException) {
                 throw new ExternalApiException("Timeout after " + API_TIMEOUT.getSeconds() + "s calling FreeIPAPI", e);
