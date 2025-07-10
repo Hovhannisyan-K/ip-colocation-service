@@ -1,6 +1,7 @@
 package com.example.ipcolocationservice.service;
 
 import com.example.ipcolocationservice.dto.IpInfoResponse;
+import com.example.ipcolocationservice.exceptions.ExternalApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -9,8 +10,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -65,4 +65,28 @@ class IpLookupServiceTest {
         verify(exchangeFunction, times(1)).exchange(any());
     }
 
+    @Test
+    void lookup_clientError_throwsIllegalArgumentException() {
+        ClientResponse badRequest = ClientResponse.create(HttpStatus.BAD_REQUEST).build();
+        when(exchangeFunction.exchange(any()))
+                .thenReturn(Mono.just(badRequest));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.lookup("1.2.3.4")
+        );
+        assertTrue(ex.getMessage().contains("Invalid IP or bad request"));
+    }
+
+    @Test
+    void lookup_serverError_throwsExternalApiException() {
+        ClientResponse serverError = ClientResponse.create(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(exchangeFunction.exchange(any()))
+                .thenReturn(Mono.just(serverError));
+        ExternalApiException ex = assertThrows(
+                ExternalApiException.class,
+                () -> service.lookup("1.2.3.4")
+        );
+        assertTrue(ex.getMessage().contains("FreeIPAPI server error"));
+    }
 }
