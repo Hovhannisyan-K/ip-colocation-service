@@ -5,11 +5,13 @@ import com.example.ipcolocationservice.exceptions.ExternalApiException;
 import com.example.ipcolocationservice.service.IpLookupService;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ip")
@@ -22,16 +24,31 @@ public class IpLookupController {
     }
 
     @GetMapping("/{ip}")
-    public IpInfoResponse getIpInfo(@PathVariable String ip) {
+    public ResponseEntity<?> getIpInfo(@PathVariable String ip) {
         if (!isValidIp(ip)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid IP: " + ip);
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "Invalid IP address: " + ip));
         }
+
         try {
-            return lookupService.lookup(ip);
+            IpInfoResponse info = lookupService.lookup(ip);
+            return ResponseEntity.ok(info);
+
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", e.getMessage()));
+
         } catch (ExternalApiException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body(Map.of("error", e.getMessage()));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Unexpected error: " + e.getMessage()));
         }
     }
 
